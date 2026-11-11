@@ -1,0 +1,449 @@
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adrian Strategy · Gold Scalping Framework</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(145deg, #0d1117 0%, #161b22 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            padding: 2rem 1rem;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        /* header */
+        .strategy-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+
+        .strategy-header h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, #f0c45a 0%, #e6b450 40%, #c99e2b 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 20px rgba(230, 180, 80, 0.15);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .strategy-header h1 span {
+            background: rgba(230, 180, 80, 0.12);
+            font-size: 1.1rem;
+            font-weight: 500;
+            padding: 0.25rem 0.9rem;
+            border-radius: 40px;
+            color: #e6b450;
+            border: 1px solid rgba(230, 180, 80, 0.3);
+            letter-spacing: 0.3px;
+            text-shadow: none;
+            -webkit-background-clip: unset;
+            background-clip: unset;
+        }
+
+        .subtitle {
+            color: #8b949e;
+            font-size: 1.1rem;
+            max-width: 700px;
+            margin: 1rem auto 0;
+            line-height: 1.6;
+        }
+
+        .disclaimer-badge {
+            background: #1c2128;
+            border-left: 3px solid #d4a82c;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            margin-bottom: 2.5rem;
+            color: #b1b9c5;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+        }
+
+        .disclaimer-badge::before {
+            content: "⚠️";
+            font-size: 1.5rem;
+        }
+
+        /* timeframe cards */
+        .tf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .tf-card {
+            background: #1c2128;
+            border-radius: 24px;
+            padding: 1.8rem 1.5rem;
+            border: 1px solid #30363d;
+            transition: transform 0.2s ease, border-color 0.2s;
+            box-shadow: 0 12px 24px -12px rgba(0,0,0,0.6);
+        }
+
+        .tf-card:hover {
+            border-color: #d4a82c;
+            transform: translateY(-4px);
+        }
+
+        .tf-badge {
+            display: inline-block;
+            background: #2d333b;
+            color: #e6b450;
+            font-weight: 700;
+            font-size: 1.2rem;
+            padding: 0.3rem 1rem;
+            border-radius: 40px;
+            border: 1px solid #444c56;
+            margin-bottom: 1.2rem;
+            letter-spacing: 0.5px;
+        }
+
+        .tf-card h3 {
+            color: #e6edf3;
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .tf-card p {
+            color: #9aa5b5;
+            line-height: 1.6;
+            font-size: 0.98rem;
+        }
+
+        .tf-card .highlight {
+            color: #e6b450;
+            font-weight: 500;
+        }
+
+        /* buy / sell dual panel */
+        .setup-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.8rem;
+            margin: 3rem 0 2.5rem;
+        }
+
+        .setup-card {
+            background: #1c2128;
+            border-radius: 28px;
+            padding: 2rem 1.8rem;
+            border: 1px solid #30363d;
+            box-shadow: 0 16px 28px -12px rgba(0,0,0,0.7);
+        }
+
+        .setup-card.buy {
+            border-top: 5px solid #2ea043;
+        }
+
+        .setup-card.sell {
+            border-top: 5px solid #f85149;
+        }
+
+        .setup-card h2 {
+            font-size: 1.9rem;
+            font-weight: 700;
+            margin-bottom: 1.6rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .setup-card.buy h2 {
+            color: #2ea043;
+        }
+
+        .setup-card.sell h2 {
+            color: #f85149;
+        }
+
+        .step-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 1.1rem;
+        }
+
+        .step-list li {
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            color: #b1b9c5;
+            line-height: 1.5;
+            font-size: 0.98rem;
+        }
+
+        .step-num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            background: #2d333b;
+            color: #e6edf3;
+            font-weight: 700;
+            width: 24px;
+            height: 24px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .setup-card.buy .step-num {
+            background: rgba(46, 160, 67, 0.2);
+            color: #3fb950;
+        }
+
+        .setup-card.sell .step-num {
+            background: rgba(248, 81, 73, 0.2);
+            color: #f85149;
+        }
+
+        .sl-tp {
+            background: #0d1117;
+            border-radius: 16px;
+            padding: 1rem 1.2rem;
+            margin-top: 1.2rem;
+            border: 1px solid #30363d;
+        }
+
+        .sl-tp div {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.4rem 0;
+            color: #9aa5b5;
+            font-size: 0.95rem;
+        }
+
+        .sl-tp div span:last-child {
+            color: #e6edf3;
+            font-weight: 500;
+        }
+
+        /* discipline rules */
+        .rules-section {
+            background: #1c2128;
+            border-radius: 28px;
+            padding: 2rem 2rem;
+            border: 1px solid #30363d;
+            margin: 2rem 0 1.5rem;
+        }
+
+        .rules-section h2 {
+            color: #e6b450;
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .rules-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .rule-item {
+            background: #0d1117;
+            padding: 1.2rem 1.4rem;
+            border-radius: 16px;
+            border-left: 4px solid #d4a82c;
+        }
+
+        .rule-item h4 {
+            color: #e6edf3;
+            font-size: 1.05rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .rule-item p {
+            color: #8b949e;
+            font-size: 0.9rem;
+            line-height: 1.5;
+        }
+
+        /* caveat box */
+        .caveat {
+            background: rgba(210, 153, 34, 0.08);
+            border: 1px solid rgba(210, 153, 34, 0.3);
+            border-radius: 20px;
+            padding: 1.6rem 2rem;
+            margin-top: 2rem;
+            color: #d0d7de;
+            font-size: 0.98rem;
+            line-height: 1.6;
+        }
+
+        .caveat strong {
+            color: #e6b450;
+        }
+
+        /* responsive */
+        @media (max-width: 700px) {
+            .setup-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .strategy-header h1 {
+                font-size: 2.2rem;
+                flex-wrap: wrap;
+            }
+
+            .subtitle {
+                font-size: 1rem;
+            }
+
+            .rules-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 2.5rem;
+            color: #5e6a7a;
+            font-size: 0.85rem;
+            border-top: 1px solid #21262d;
+            padding-top: 1.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- header -->
+        <div class="strategy-header">
+            <h1>Adrian Strategy <span>15m · 5m · 1m</span></h1>
+            <div class="subtitle">Gold scalping framework — multi-timeframe alignment with strict discipline</div>
+        </div>
+
+        <!-- disclaimer -->
+        <div class="disclaimer-badge">
+            <span><strong>Not a proprietary system.</strong> This is a rules-based synthesis of established multi-timeframe scalping logic. No verified public track record exists under the name "Adrian Strategy." Backtest on demo before risking capital.</span>
+        </div>
+
+        <!-- timeframe roles -->
+        <div class="tf-grid">
+            <div class="tf-card">
+                <div class="tf-badge">15m</div>
+                <h3>Bias</h3>
+                <p>Clear market structure: <span class="highlight">higher highs / higher lows</span> (bullish) or <span class="highlight">lower highs / lower lows</span> (bearish). No clear structure = no trade.</p>
+            </div>
+            <div class="tf-card">
+                <div class="tf-badge">5m</div>
+                <h3>Zone</h3>
+                <p>Price pulling back into a meaningful area: previous support-turned-resistance, VWAP, or a recent swing level. <span class="highlight">Do not chase price.</span></p>
+            </div>
+            <div class="tf-card">
+                <div class="tf-badge">1m</div>
+                <h3>Trigger</h3>
+                <p>A price-action confirmation candle at that zone: <span class="highlight">rejection wick, engulfing candle</span>, or break of a small 1m structure in the direction of the 15m bias.</p>
+            </div>
+        </div>
+
+        <!-- buy and sell setups -->
+        <div class="setup-grid">
+            <!-- BUY -->
+            <div class="setup-card buy">
+                <h2>🟢 When to BUY</h2>
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> <strong>15m bullish:</strong> Price making higher highs & higher lows, or clearly above 50 EMA with structure intact.</li>
+                    <li><span class="step-num">2</span> <strong>5m pullback:</strong> Wait for price to pull back into a support zone (prior breakout level, demand zone, or 20/50 EMA on 5m). <em>Do not chase upward.</em></li>
+                    <li><span class="step-num">3</span> <strong>1m trigger:</strong> At that 5m zone, look for a 1m bullish rejection candle (long lower wick) or bullish engulfing candle. Enter at the close of that 1m candle.</li>
+                </ul>
+                <div class="sl-tp">
+                    <div><span>Stop Loss</span> <span>Below the low of the 1m trigger candle or below the 5m support zone</span></div>
+                    <div><span>Take Profit</span> <span>Most recent 15m swing high, or fixed 1:2 RR</span></div>
+                    <div><span>Management</span> <span>Move stop to breakeven at 1R</span></div>
+                </div>
+            </div>
+
+            <!-- SELL -->
+            <div class="setup-card sell">
+                <h2>🔴 When to SELL</h2>
+                <ul class="step-list">
+                    <li><span class="step-num">1</span> <strong>15m bearish:</strong> Price making lower highs & lower lows, or clearly below a key moving average with structure intact.</li>
+                    <li><span class="step-num">2</span> <strong>5m pullback:</strong> Wait for price to rally back into a resistance zone (prior support-turned-resistance, supply zone, or 20/50 EMA on 5m). <em>Do not chase downward.</em></li>
+                    <li><span class="step-num">3</span> <strong>1m trigger:</strong> At that 5m zone, look for a 1m bearish rejection candle (long upper wick) or bearish engulfing candle. Enter at the close of that 1m candle.</li>
+                </ul>
+                <div class="sl-tp">
+                    <div><span>Stop Loss</span> <span>Above the high of the 1m trigger candle or above the 5m resistance zone</span></div>
+                    <div><span>Take Profit</span> <span>Most recent 15m swing low, or fixed 1:2 RR</span></div>
+                    <div><span>Management</span> <span>Move stop to breakeven at 1R</span></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- discipline rules -->
+        <div class="rules-section">
+            <h2>⚡ The "Adrian" Discipline Rules</h2>
+            <div class="rules-grid">
+                <div class="rule-item">
+                    <h4>🕒 Session filter</h4>
+                    <p>Only trade <strong>London (08:00–12:00 UTC)</strong> and <strong>New York (13:00–17:00 UTC)</strong>. Avoid low-liquidity Asian session chop.</p>
+                </div>
+                <div class="rule-item">
+                    <h4>📰 No news trading</h4>
+                    <p>Stay out 5 minutes before and after major USD news (CPI, NFP, FOMC). Spreads widen and stops get hunted.</p>
+                </div>
+                <div class="rule-item">
+                    <h4>💰 Risk per trade</h4>
+                    <p>Never risk more than <strong>0.5%–1%</strong> of your account per scalp. Gold moves fast — leverage can hurt.</p>
+                </div>
+                <div class="rule-item">
+                    <h4>🛑 Max trades per day</h4>
+                    <p>Cap at <strong>3–5 trades</strong>. Two consecutive losses = stop for the session. Revenge trading kills scalpers.</p>
+                </div>
+                <div class="rule-item">
+                    <h4>📊 Range filter</h4>
+                    <p>If the 15m is ranging (no clear highs/lows), <strong>do nothing</strong>. The strategy requires directional bias.</p>
+                </div>
+                <div class="rule-item">
+                    <h4>🧪 Backtest first</h4>
+                    <p>Run at least <strong>100 demo trades</strong> with your broker's spreads and execution speed before going live.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- caveat -->
+        <div class="caveat">
+            <strong>Honest caveat:</strong> Gold scalping on 1m/5m has a lower natural win rate due to noise. Research suggests 1m setups can have a ~43% win rate without higher-timeframe filtering — which is why the <strong>15m bias is non-negotiable</strong> in this framework. Treat this as a framework, not a guarantee. No strategy works in every market condition.
+        </div>
+
+        <div class="footer-note">
+            Adrian Strategy · Multi-timeframe gold scalping framework · For educational purposes only
+        </div>
+    </div>
+</body>
+</html>
